@@ -13,11 +13,7 @@ from crud.atendimento import crud_atendimento as crud
 
 router = APIRouter(prefix='/atendimento', tags=['Atendimento'])
 
-UPLOAD_DIR = 'uploads/'
 TARGET_TIMEZONE = ZoneInfo("America/Sao_Paulo")
-
-
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @router.post(

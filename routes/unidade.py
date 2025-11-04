@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from typing import List
 
 
 from core.security import JWTBearer, require_privilegio
@@ -16,13 +17,13 @@ router = APIRouter(prefix='/unidade', tags=['Unidade'])
 @router.get(
         '/',
         dependencies=[Depends(JWTBearer())],
-        response_model=list[UnidadeResponse],
+        response_model=List[UnidadeResponse],
         status_code=HTTPStatus.OK
 )
 def get_unidades(
     session: Session = Depends(get_session),
     offset: int = 1,
-    limit: int = 100,
+    limit: int = 10,
     search: str = ''):
 
     unidades = crud.get_unidades(session, offset, limit, search)

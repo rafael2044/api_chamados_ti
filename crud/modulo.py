@@ -19,12 +19,13 @@ class CRUDModulo:
             search: str = ''
     ) -> list[Modulo]:
         skip = (offset - 1) * limit
-        smtm = select(Modulo).offset(skip).limit(limit)
+        smtm = select(Modulo).offset(skip).limit(limit).order_by(Modulo.id)
         if search:
             smtm = (select(Modulo)
                     .where(Modulo.nome.ilike(f'%{search}%'))
                     .offset(skip)
-                    .limit(limit))
+                    .limit(limit)
+                    .order_by(Modulo.id))
         
         return session.scalars(smtm).all()
 

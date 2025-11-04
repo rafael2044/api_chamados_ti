@@ -1,5 +1,4 @@
-from http import HTTPStatus
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status as HTTPStatus
 from sqlalchemy.orm import Session
 
 
@@ -18,7 +17,7 @@ router = APIRouter(prefix='/user', tags=['User'])
     '/',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
     response_model=UsersResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_users(
     offset: int = 1,
@@ -51,7 +50,7 @@ def get_users(
     '/',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
     response_model= UserResponse,
-    status_code=HTTPStatus.CREATED
+    status_code=HTTPStatus.HTTP_201_CREATED
 )
 def create_user(
         user: UserCreate,
@@ -66,10 +65,24 @@ def create_user(
     }
 
 
+@router.patch(
+        '/reset-password/{user_id}',
+        dependencies=[Depends(JWTBearer()), Depends(require_privilegio('Administrador'))],
+        status_code=HTTPStatus.HTTP_200_OK
+)
+def update_password(user_id: int, password: str, session: Session = Depends(get_session)):
+    user_db = crud.update_password(session, user_id, password)
+
+    return {
+        'message': 'Senha alterada',
+        'user_id': user_db.id
+    }
+
+
 @router.delete(
     '/{user_id}',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
-    status_code=HTTPStatus.NO_CONTENT
+    status_code=HTTPStatus.HTTP_204_NO_CONTENT
 )
 def delete_user(user_id: int, session: Session = Depends(get_session)):
     crud.delete_user(session, user_id)

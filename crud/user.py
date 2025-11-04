@@ -21,10 +21,10 @@ class CRUDUser:
             search: str = ''
     ) -> list[User]:
         try:
-            smtm = select(User).options(joinedload(User.privilegio)).offset(skip).limit(limit)
+            smtm = select(User).options(joinedload(User.privilegio)).offset(skip).limit(limit).order_by(User.id)
             if search:
                 smtm = (select(User).where(User.username.ilike(f'%{search}%'))
-                        .options(joinedload(User.privilegio)).offset(skip).limit(limit))
+                        .options(joinedload(User.privilegio)).offset(skip).limit(limit)).order_by(User.id)
             users = session.scalars(smtm).all()
             return users
         except Exception as e:
@@ -105,6 +105,14 @@ class CRUDUser:
         session.refresh(new_user)
         return new_user
 
+
+    def update_password(self, session: Session, user_id: int, new_password: str) -> User:
+
+        user_db = self.get_user_by_id(session, user_id)
+        user_db.hashed_password = hash_password(new_password)
+        session.commit()
+        session.refresh(user_db)
+        return user_db
 
     def delete_user(self, session:Session, user_id: int):
         user_db = self.get_user_by_id(session, user_id)
