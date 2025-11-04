@@ -13,7 +13,8 @@ ssl_args = {
 }
 
 engine = create_engine(
-    Settings().DATABASE_URL
+    Settings().DATABASE_URL,
+    connect_args=ssl_args
 )
 Base = declarative_base()
 
