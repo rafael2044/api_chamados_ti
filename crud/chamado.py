@@ -173,6 +173,12 @@ class CRUDChamado:
         return {
             "url": chamado_db.caminho_anexo,
         }
+    
+
+    def delete_chamado(self, session:Session, chamado_id: int):
+        chamado_db = self.get_chamado_by_id(session, chamado_id)
+        session.delete(chamado_db)
+        session.commit()
 
 
 crud_chamado = CRUDChamado()

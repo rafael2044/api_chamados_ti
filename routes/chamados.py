@@ -10,6 +10,7 @@ from models.user import User
 from crud.chamado import crud_chamado as crud
 from schemas.chamadoRequest import ChamadoRequest
 from schemas.chamadosResponse import ChamadosResponse
+from schemas.chamadoResponse import ChamadoResponse
 
 
 router = APIRouter(prefix='/chamados', tags=['Chamados'])
@@ -101,3 +102,65 @@ def finalizar_chamado(chamado_id: int,
         'message': f'Chamado #{chamado_id} finalizado com sucesso',
         'data_fechamento': chamado_db.data_fechamento.astimezone(TARGET_TIMEZONE)
     }
+
+
+@router.patch(
+        '/{chamado_id}',
+        dependencies= [
+            Depends(JWTBearer()),
+            Depends(require_privilegio(['Administrador', 'Suporte']))
+        ],
+        response_model=ChamadoResponse,
+        status_code=HTTPStatus.OK
+)
+def update_chamado(
+    chamado_id:int,
+    chamado_update: ChamadoRequest,
+    session: Session = Depends(get_session)
+):
+    chamado_db = crud.update_chamado(
+            session, 
+            chamado_id, 
+            {
+                'titulo': chamado_update.titulo,
+                'unidade_id': chamado_update.unidade,
+                'setor': chamado_update.setor,
+                'modulo_id': chamado_update.modulo,
+                'urgencia': chamado_update.urgencia,
+                'descricao': chamado_update.descricao 
+            }
+        )
+
+    return {
+            'id': chamado_db.id,
+            'titulo': chamado_db.titulo,
+            'unidade': chamado_db.unidade.nome if chamado_db.unidade else '———',
+            'setor': chamado_db.setor,
+            'modulo': chamado_db.modulo.nome if chamado_db.modulo else '———',
+            'urgencia': chamado_db.urgencia,
+            'descricao': chamado_db.descricao,
+            'status': chamado_db.status.nome,
+            'url_anexo': chamado_db.url_anexo,
+            'data_abertura': chamado_db.data_abertura.astimezone(TARGET_TIMEZONE),
+            'data_fechamento': chamado_db.data_fechamento.astimezone(TARGET_TIMEZONE) if chamado_db.data_fechamento else None,
+            'solicitante': chamado_db.usuario.username if chamado_db.usuario else 'Desconhecido',
+            'atendimentos': [
+                {
+                    'id': a.id,
+                    'descricao': a.descricao,
+                    'data_atendimento': a.data_atendimento.astimezone(TARGET_TIMEZONE),
+                    'suporte': a.suporte.username if a.suporte else 'Desconhecido',
+                    'url_anexo': a.url_anexo
+                }
+                for a in (chamado_db.atendimentos or [])
+            ]
+        }
+
+
+@router.delete(
+    '/{chamado_id}',
+    dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador', 'Suporte']))],
+    status_code=HTTPStatus.NO_CONTENT
+)
+def delete_chamado(chamado_id: int, session: Session = Depends(get_session)):
+    crud.delete_chamado(session, chamado_id)
