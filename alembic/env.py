@@ -18,8 +18,16 @@ from models.chamado import Chamado
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+PATH_SSL_ROOT_CERT = Settings().PATH_SSL_ROOT_CERT
+PATH_SSL_CERT = Settings().PATH_SSL_CERT
+PATH_SSL_KEY = Settings().PATH_SSL_KEY
 
-db_url = f'{Settings().DATABASE_URL}?sslmode=verify-full&sslrootcert={Settings().PATH_SSL_ROOT_CERT}&sslcert={Settings().PATH_SSL_CERT}&sslkey={Settings().PATH_SSL_KEY}'
+db_url = Settings().DATABASE_URL
+
+if (PATH_SSL_ROOT_CERT and PATH_SSL_CERT and PATH_SSL_KEY):
+    db_url+=f'?sslmode=verify-full&sslrootcert={Settings().PATH_SSL_ROOT_CERT}&sslcert={Settings().PATH_SSL_CERT}&sslkey={Settings().PATH_SSL_KEY}'
+
+
 config.set_main_option('sqlalchemy.url',db_url)
 
 # Interpret the config file for Python logging.

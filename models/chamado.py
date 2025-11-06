@@ -43,7 +43,7 @@ class Chamado(Base):
     usuario: Mapped['User'] = relationship(back_populates='chamados')
     status: Mapped['Status'] = relationship(back_populates='chamados')
     atendimentos: Mapped[List['Atendimento']] = relationship(
-        back_populates='chamado')
+        back_populates='chamado', cascade="all, delete")
 
 
 from models.atendimento import Atendimento
