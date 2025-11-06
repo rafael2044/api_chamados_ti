@@ -22,7 +22,7 @@ router = APIRouter(prefix='/modulo', tags=['Modulo'])
 def get_modulos(
     session: Session = Depends(get_session),
     offset: int = 1,
-    limit: int = 20,
+    limit: int = 100,
     search: str = ''):
 
     result = []

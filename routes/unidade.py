@@ -23,7 +23,7 @@ router = APIRouter(prefix='/unidade', tags=['Unidade'])
 def get_unidades(
     session: Session = Depends(get_session),
     offset: int = 1,
-    limit: int = 10,
+    limit: int = 100,
     search: str = ''):
 
     unidades = crud.get_unidades(session, offset, limit, search)

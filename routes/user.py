@@ -21,7 +21,7 @@ router = APIRouter(prefix='/user', tags=['User'])
 )
 def get_users(
     offset: int = 1,
-    limit: int = 10,
+    limit: int = 100,
     search: str = '',
     session: Session = Depends(get_session)
 ):
