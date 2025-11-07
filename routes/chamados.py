@@ -32,9 +32,9 @@ def get_chamados(session: Session = Depends(get_session), offset: int = 1, limit
         result.append({
             'id': c.id,
             'titulo': c.titulo,
-            'unidade': c.unidade.nome if c.unidade else '———',
+            'unidade': c.unidade.nome if c.unidade else '',
             'setor': c.setor,
-            'modulo': c.modulo.nome if c.modulo else '———',
+            'modulo': c.modulo.nome if c.modulo else '',
             'urgencia': c.urgencia,
             'descricao': c.descricao,
             'status': c.status.nome,
@@ -134,9 +134,9 @@ def update_chamado(
     return {
             'id': chamado_db.id,
             'titulo': chamado_db.titulo,
-            'unidade': chamado_db.unidade.nome if chamado_db.unidade else '———',
+            'unidade': chamado_db.unidade.nome if chamado_db.unidade else '',
             'setor': chamado_db.setor,
-            'modulo': chamado_db.modulo.nome if chamado_db.modulo else '———',
+            'modulo': chamado_db.modulo.nome if chamado_db.modulo else '',
             'urgencia': chamado_db.urgencia,
             'descricao': chamado_db.descricao,
             'status': chamado_db.status.nome,
