@@ -27,7 +27,7 @@ class CRUDChamado:
                     joinedload(Chamado.unidade),
                     joinedload(Chamado.modulo),
                     joinedload(Chamado.status))
-            .offset(skip).limit(limit).order_by(Chamado.data_abertura.desc())
+            .offset(skip).limit(limit).order_by(Chamado.status_id, Chamado.data_abertura.desc())
         )
 
         if search:
@@ -39,7 +39,7 @@ class CRUDChamado:
                     joinedload(Chamado.unidade),
                     joinedload(Chamado.modulo),
                     joinedload(Chamado.status))
-            .offset(skip).limit(limit).order_by(Chamado.data_abertura.desc())
+            .offset(skip).limit(limit).order_by(Chamado.status_id, Chamado.data_abertura.desc())
             )
         
     
