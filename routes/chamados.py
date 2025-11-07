@@ -24,9 +24,34 @@ TARGET_TIMEZONE = ZoneInfo('America/Sao_Paulo')
     dependencies=[Depends(JWTBearer())],
     status_code=HTTPStatus.OK
 )
-def get_chamados(session: Session = Depends(get_session), offset: int = 1, limit: int = 10, search: str = ''):
-    chamados = crud.get_chamados(session, offset=offset, limit=limit, search=search)
-    total = crud.get_total_chamados(session, search=search)
+def get_chamados(
+    session: Session = Depends(get_session),
+    offset: int = 1,
+    limit: int = 10,
+    search: str = '',
+    unidade_id: int = None,
+    modulo_id: int = None,
+    status_id: int = None,
+    urgencia: str = ''
+):
+    chamados = crud.get_chamados(
+        session, 
+        offset, 
+        limit,
+        search,
+        unidade_id,
+        modulo_id,
+        status_id,
+        urgencia)
+    
+    total = crud.get_total_chamados(
+        session,
+        search,
+        unidade_id, 
+        modulo_id,
+        status_id, 
+        urgencia)
+    
     result = []
     for c in chamados:
         result.append({
