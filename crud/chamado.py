@@ -16,7 +16,11 @@ class CRUDChamado:
             session: Session,
             offset: int = 1,
             limit: int = 10,
-            search: str = ''
+            search: str = '',
+            unidade_id: int = None,
+            modulo_id: int = None,
+            status_id: int = None,
+            urgencia: str = ''
     ) -> list[Chamado]:
         
         skip = (offset - 1) * limit
@@ -30,26 +34,39 @@ class CRUDChamado:
             .offset(skip).limit(limit).order_by(Chamado.status_id ,Chamado.data_abertura.desc())
         )
 
+        if modulo_id: smtm = smtm.where(Chamado.modulo_id == modulo_id)
+        if status_id: smtm = smtm.where(Chamado.status_id == status_id)
+        if unidade_id: smtm = smtm.where(Chamado.unidade_id == unidade_id)
+        if urgencia: smtm = smtm.where(Chamado.urgencia == urgencia)
+
         if search:
-            smtm = (select(Chamado).where(
+            smtm = smtm.where(
                 Chamado.titulo.ilike(f'%{search}%')
             )
-            .options(joinedload(Chamado.usuario),
-                    selectinload(Chamado.atendimentos),
-                    joinedload(Chamado.unidade),
-                    joinedload(Chamado.modulo),
-                    joinedload(Chamado.status))
-            .offset(skip).limit(limit).order_by(Chamado.status_id ,Chamado.data_abertura.desc())
-            )
         
-    
         return session.scalars(smtm).all()
 
 
-    def get_total_chamados(self, session: Session, search: str = ''):
+    def get_total_chamados(
+            self,
+            session: Session,
+            search: str = '',
+            unidade_id: int = None,
+            modulo_id: int = None,
+            status_id: int = None,
+            urgencia: str = ''
+    ) -> int:
         smtm = select(Chamado)
+
+        if modulo_id: smtm = smtm.where(Chamado.modulo_id == modulo_id)
+        if status_id: smtm = smtm.where(Chamado.status_id == status_id)
+        if unidade_id: smtm = smtm.where(Chamado.unidade_id == unidade_id)
+        if urgencia: smtm = smtm.where(Chamado.urgencia == urgencia)
+
         if search:
-            smtm = (select(Chamado).where(Chamado.titulo.ilike(f'%{search}%')))
+            smtm = smtm.where(Chamado.titulo.ilike(f'%{search}%'))
+
+
 
         total = session.execute(select(func.count()).select_from(smtm)).scalar()
         return total

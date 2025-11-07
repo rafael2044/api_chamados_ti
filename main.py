@@ -14,7 +14,8 @@ from routes import (
     privilegio,
     unidade,
     user,
-    relatorio
+    relatorio,
+    status
 )
 from core.exception_handlers import db_connection_exception_handler
 from core.settings import Settings
@@ -48,6 +49,7 @@ app.include_router(atendimento.router)
 app.include_router(privilegio.router)
 app.include_router(user.router)
 app.include_router(relatorio.router)
+app.include_router(status.router)
 
 
 if __name__ == '__main__':
