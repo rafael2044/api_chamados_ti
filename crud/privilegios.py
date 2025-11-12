@@ -6,7 +6,8 @@ from models.privilegio import Privilegio
 class CRUDPrivilegio:
 
     def get_privilegios(self, session: Session) -> list[Privilegio]:
-        privilegios = session.scalars(select(Privilegio)).all()
+        smtm = select(Privilegio).order_by(Privilegio.id);
+        privilegios = session.scalars(smtm).all()
         return privilegios
     
 crud_privilegio = CRUDPrivilegio()

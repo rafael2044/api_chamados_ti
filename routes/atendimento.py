@@ -1,6 +1,4 @@
-import os
-from http import HTTPStatus
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile, status as HTTPStatus
 from sqlalchemy.orm import Session
 from zoneinfo import ZoneInfo
 
@@ -20,7 +18,7 @@ TARGET_TIMEZONE = ZoneInfo("America/Sao_Paulo")
     '/{chamado_id}',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador', 'Suporte']))],
     response_model=AtendimentoResponse,
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 async def insert_atendimento(
     chamado_id: int,

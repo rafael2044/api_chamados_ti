@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status as HTTPStatus
 from sqlalchemy.orm import Session
 
 
@@ -19,7 +19,11 @@ from crud.user import crud_user
 router = APIRouter(tags=['Auth'])
 
 
-@router.post('/register', response_model=UserResponse)
+@router.post(
+    '/register',
+    response_model=UserResponse,
+    status_code=HTTPStatus.HTTP_200_OK
+)
 def register_user(user: UserRegister, session: Session = Depends(get_session)):
     
     new_user = crud_user.register_user(session, user)
@@ -32,9 +36,10 @@ def register_user(user: UserRegister, session: Session = Depends(get_session)):
 
 
 @router.post(
-        '/login',
-        status_code=status.HTTP_200_OK,
-        response_model=Token)
+    '/login',
+    status_code=HTTPStatus.HTTP_200_OK,
+    response_model=Token
+)
 def login(user: UserLogin, session: Session = Depends(get_session)):
     db_user = crud_user.get_user_by_username(session, user.username.lower())
 
@@ -62,7 +67,10 @@ def login(user: UserLogin, session: Session = Depends(get_session)):
     }
 
 
-@router.post('/refresh')
+@router.post(
+    '/refresh',
+    status_code=HTTPStatus.HTTP_200_OK
+)
 def refresh_token(request: TokenRefreshRequest, session: Session = Depends(get_session)):
     payload = verify_token(request.refresh_token)
     db_user = crud_user.get_user_by_username(session, payload.get('sub'))

@@ -25,17 +25,13 @@ def get_users(
     search: str = '',
     session: Session = Depends(get_session)
 ):
-    
     skip = (offset - 1) * limit
     users = crud.get_users(session, skip, limit, search)
     total = crud.get_total_users(session, search)
     result = []
+
     for u in users:
-        result.append({
-            'id': u.id,
-            'username': u.username,
-            'privilegio': u.privilegio
-        })
+        result.append(UserResponse.model_validate(u))
     
     return {
         'users': result,
@@ -58,11 +54,7 @@ def create_user(
 ):
     new_user = crud.insert_user(session, user)
     
-    return {
-        'id': new_user.id,
-        'username': new_user.username,
-        'privilegio': new_user.privilegio
-    }
+    return UserResponse.model_validate(new_user)
 
 
 @router.patch(
@@ -74,8 +66,7 @@ def update_password(user_id: int, password: str, session: Session = Depends(get_
     user_db = crud.update_password(session, user_id, password)
 
     return {
-        'message': 'Senha alterada',
-        'user_id': user_db.id
+        'detail': f'Senha do usuário {user_db.username} alterada.',
     }
 
 

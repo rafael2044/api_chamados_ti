@@ -1,5 +1,4 @@
-from http import HTTPStatus
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status as HTTPStatus
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
@@ -19,7 +18,7 @@ router = APIRouter(prefix='/relatorio', tags=['Relatorio'])
     '/chamados-por-modulo',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
     response_model=List[ReportItem],
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_relatorio_chamados_por_modulo(
     session: Session = Depends(get_session),
@@ -36,7 +35,7 @@ def get_relatorio_chamados_por_modulo(
     '/chamados-por-unidade',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
     response_model=List[ReportItem],
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_relatorio_chamados_por_unidade(
     session: Session = Depends(get_session),
@@ -52,7 +51,7 @@ def get_relatorio_chamados_por_unidade(
     '/chamados-por-status',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
     response_model=List[ReportItem],
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_relatorio_chamados_por_status(
     session: Session = Depends(get_session),
@@ -68,7 +67,7 @@ def get_relatorio_chamados_por_status(
     '/tmr-por-modulo',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
     response_model=List[ReportSLAItem],
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_relatorio_tmr_por_modulo(
     session: Session = Depends(get_session),

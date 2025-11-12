@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status as HTTPStatus
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -15,7 +15,8 @@ router = APIRouter(prefix='/status', tags=['Status'])
 @router.get(
     '/',
     dependencies=[Depends(JWTBearer())],
-    response_model=List[StatusResponse]
+    response_model=List[StatusResponse],
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_privilegios(session: Session = Depends(get_session)):
     status = crud.get_status(session)

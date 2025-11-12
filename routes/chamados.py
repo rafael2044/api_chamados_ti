@@ -1,5 +1,4 @@
-from http import HTTPStatus
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, UploadFile, status as HTTPStatus
 from sqlalchemy.orm import Session
 from zoneinfo import ZoneInfo
 
@@ -22,7 +21,7 @@ TARGET_TIMEZONE = ZoneInfo('America/Sao_Paulo')
     '/',
     response_model=ChamadosResponse,
     dependencies=[Depends(JWTBearer())],
-    status_code=HTTPStatus.OK
+    status_code=HTTPStatus.HTTP_200_OK
 )
 def get_chamados(
     session: Session = Depends(get_session),
@@ -90,7 +89,7 @@ def get_chamados(
 @router.post(
     '/',
     dependencies=[Depends(JWTBearer())],
-    status_code=HTTPStatus.CREATED
+    status_code=HTTPStatus.HTTP_201_CREATED
 )
 def create_chamado(
     chamado: ChamadoRequest,
@@ -101,7 +100,11 @@ def create_chamado(
     return {'chamado_id': new_chamado.id, 'message': f'Chamado #{new_chamado.id} aberto com sucesso'}
 
 
-@router.post('/{chamado_id}/anexo', dependencies=[Depends(JWTBearer())], status_code=HTTPStatus.CREATED)
+@router.post(
+    '/{chamado_id}/anexo',
+    dependencies=[Depends(JWTBearer())],
+    status_code=HTTPStatus.HTTP_201_CREATED
+)
 async def upload_anexo_chamado(
     chamado_id: int,
     file: UploadFile = File(...),
@@ -116,7 +119,7 @@ async def upload_anexo_chamado(
         '/{chamado_id}/finalizar',
         dependencies=[Depends(JWTBearer()),
                     Depends(require_privilegio(['Administrador', 'Suporte']))],
-        status_code=HTTPStatus.OK
+        status_code=HTTPStatus.HTTP_200_OK
               )
 def finalizar_chamado(chamado_id: int,
                       session: Session = Depends(get_session)):
@@ -136,7 +139,7 @@ def finalizar_chamado(chamado_id: int,
             Depends(require_privilegio(['Administrador', 'Suporte']))
         ],
         response_model=ChamadoResponse,
-        status_code=HTTPStatus.OK
+        status_code=HTTPStatus.HTTP_200_OK
 )
 def update_chamado(
     chamado_id:int,
@@ -185,7 +188,7 @@ def update_chamado(
 @router.delete(
     '/{chamado_id}',
     dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador', 'Suporte']))],
-    status_code=HTTPStatus.NO_CONTENT
+    status_code=HTTPStatus.HTTP_204_NO_CONTENT
 )
 def delete_chamado(chamado_id: int, session: Session = Depends(get_session)):
     crud.delete_chamado(session, chamado_id)
