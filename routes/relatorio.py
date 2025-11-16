@@ -77,3 +77,19 @@ def get_relatorio_tmr_por_modulo(
     result = query_relatorio.get_relatorio_tmr_por_modulo(session, data_inicio, data_fim)
 
     return result
+
+
+@router.get(
+    '/tmr-por-unidade',
+    dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
+    response_model=List[ReportSLAItem],
+    status_code=HTTPStatus.HTTP_200_OK
+)
+def get_relatorio_tmr_por_modulo(
+    session: Session = Depends(get_session),
+    data_inicio: Optional[datetime] = None,
+    data_fim: Optional[datetime] = None):
+
+    result = query_relatorio.get_relatorio_tmr_por_unidade(session, data_inicio, data_fim)
+
+    return result
