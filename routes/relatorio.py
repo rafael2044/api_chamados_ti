@@ -93,3 +93,17 @@ def get_relatorio_tmr_por_modulo(
     result = query_relatorio.get_relatorio_tmr_por_unidade(session, data_inicio, data_fim)
 
     return result
+
+@router.get(
+    '/chamados-por-suporte',
+    dependencies=[Depends(JWTBearer()), Depends(require_privilegio(['Administrador']))],
+    response_model=List[ReportItem],
+    status_code=HTTPStatus.HTTP_200_OK
+)
+def get_relatorio_chamado_por_suporte(
+        session: Session = Depends(get_session),
+        data_inicio: Optional[datetime] = None,
+        data_fim: Optional[datetime] = None
+):
+    result = query_relatorio.get_relatorio_chamado_por_suporte(session, data_inicio, data_fim)
+    return result
