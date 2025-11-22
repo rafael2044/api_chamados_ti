@@ -7,6 +7,7 @@ from models.chamado import Chamado
 from models.modulo import Modulo
 from models.status import Status
 from models.unidade import Unidade
+from models.user import User
 
 class QueryRelatorio:
 
@@ -189,6 +190,40 @@ class QueryRelatorio:
             .select_from(Unidade)  # Começa POR Unidade
             .join(Chamado, join_on_clause, isouter=True)  # LEFT JOIN
             .group_by(Unidade.nome)
+            .order_by(func.count(Chamado.id).desc())
+        )
+
+        return session.execute(query).mappings().all()
+
+    def get_relatorio_chamado_por_suporte(self, session: Session, data_inicio: datetime = None, data_fim: datetime = None):
+        join_on_clause = User.id == Chamado.usuario_id
+
+        # ---- A LÓGICA DO FILTRO ----
+
+        # Verificamos se AMBAS as datas existem
+        if data_inicio and data_fim:
+            join_on_clause = and_(
+                join_on_clause,
+                # Aplicamos o BETWEEN aqui, na cláusula ON
+                Chamado.data_abertura.between(data_inicio, data_fim)
+            )
+        elif data_inicio:
+            join_on_clause = and_(join_on_clause,
+                                  Chamado.data_abertura >= data_inicio)
+        elif data_fim:
+            join_on_clause = and_(join_on_clause,
+                                  Chamado.data_abertura <= data_fim)
+
+        # (Se o usuário passar só uma data, o filtro de data é ignorado)
+
+        query = (
+            select(
+                User.username.label("nome"),
+                func.count(Chamado.id).label('total')
+            )
+            .select_from(User)
+            .join(Chamado, join_on_clause, isouter=True)  # LEFT JOIN
+            .group_by(User.username)
             .order_by(func.count(Chamado.id).desc())
         )
 
